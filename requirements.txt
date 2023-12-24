@@ -1,0 +1,4 @@
+# lib para importar variaveis de ambiente de arquivo .env
+python-dotenv==1.0.0
+PyGithub==2.1.1
+openai==1.6.1
