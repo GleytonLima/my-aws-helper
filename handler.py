@@ -2,6 +2,7 @@ import json
 import os
 
 from dotenv import load_dotenv
+from github import Auth
 from github import Github
 from openai import OpenAI
 
@@ -37,17 +38,15 @@ def lambda_handler(event, context):
 def create_repo(parameters):
     handler_code = get_openai_code_example()
 
-    if True:
-        return "Disblaed for now!"
-
     repository_name = parameters.get('repo_name', 'default_repo_name')
     stack = parameters.get('stack', 'default_stack')
 
     github_token = os.environ['GITHUB_TOKEN']
-    github = Github(github_token)
+    auth = Auth.Token(github_token)
+    github = Github(auth=auth)
     user = github.get_user()
 
-    repo = user.create_repo(repository_name, auto_init=True)
+    repo = user.create_repo(repository_name, auto_init=False)
 
     readme_content = f"## Welcome to {repository_name}\nThis is a default README file for the {stack} stack."
     repo.create_file("README.md", "Initial commit", readme_content)
@@ -115,7 +114,7 @@ def get_openai_code_example():
     with open('example.py', 'w') as f:
         f.write(content)
 
-    return response.choices[0].message.content
+    return content
 
 
 def clear_code_markdown_code_blocks(content):
@@ -131,7 +130,8 @@ def clear_code_markdown_code_blocks(content):
 
 if __name__ == '__main__':
     event = {
-        'user_input': 'Create a Github repository for the AWS Lambda with Python stack'
+        'user_input': 'Create a Github repository for the AWS Lambda with Python stack. The name of the repository '
+                      'should be "sample-test-3".'
     }
     context = {}
 
